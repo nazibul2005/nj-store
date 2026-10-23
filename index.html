@@ -6,46 +6,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nj Store</title>
 
-.category-filter {
-  display: block;
-  width: 90%;
-  max-width: 400px;
-  margin: 15px auto;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: white;
+<style>
+* {
+  box-sizing: border-box;
 }
-  <style>
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
   background: #f3f4f6;
   text-align: center;
 }
+
 header {
   background: #111827;
   color: white;
   padding: 20px;
 }
+
 .hero {
   background: linear-gradient(135deg, #d1fae5, #dbeafe);
   margin: 15px;
   padding: 24px 12px;
   border-radius: 16px;
 }
-.hero h2 { color: #111827; }
+
+.hero h2 {
+  color: #111827;
+}
+
 .search {
-  width: 85%;
+  width: 90%;
   max-width: 500px;
   padding: 12px;
-  margin: 10px;
+  margin: 10px auto;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 16px;
-  box-sizing: border-box;
+  display: block;
 }
+
+.category-filter {
+  display: block;
+  width: 90%;
+  max-width: 500px;
+  margin: 10px auto 20px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: white;
+}
+
 .products {
   display: flex;
   flex-wrap: wrap;
@@ -53,20 +65,27 @@ header {
   gap: 14px;
   padding: 15px;
 }
+
 .product {
   background: white;
   border-radius: 12px;
   padding: 16px;
-  width: 145px;
+  width: 165px;
+  max-width: 45%;
   box-shadow: 0 2px 8px #ddd;
   transition: transform 0.2s;
 }
-.product:hover { transform: translateY(-4px); }
+
+.product:hover {
+  transform: translateY(-4px);
+}
+
 .product img {
   width: 100%;
   height: 110px;
   object-fit: contain;
 }
+
 button {
   background: #16a34a;
   color: white;
@@ -76,19 +95,38 @@ button {
   cursor: pointer;
   margin: 3px;
 }
-.remove { background: #dc2626; }
+
+.remove {
+  background: #dc2626;
+}
+
+.whatsapp-button {
+  background: #128c7e;
+  margin: 15px;
+  padding: 12px 18px;
+}
+
 #cart {
   background: white;
   margin: 15px;
   padding: 18px;
   border-radius: 12px;
 }
+
 #noResults {
   display: none;
   color: #b91c1c;
 }
+
+footer {
+  background: #111827;
+  color: white;
+  padding: 15px;
+  margin-top: 20px;
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -109,37 +147,48 @@ button {
   oninput="searchProducts()"
 >
 
-<select id="categoryFilter" class="category-filter" onchange="searchProducts()">
+<select
+  id="categoryFilter"
+  class="category-filter"
+  onchange="searchProducts()"
+>
   <option value="All">All Categories</option>
   <option value="Fashion">Fashion</option>
   <option value="Accessories">Accessories</option>
   <option value="Electronics">Electronics</option>
 </select>
-  
+
 <h2>Our Products</h2>
+
 <p id="noResults">No products found. Try another spelling.</p>
 
 <div class="products" id="productList">
 
-  <div class="product">
-    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400"
-         alt="T-Shirt">
+  <div class="product" data-category="Fashion">
+    <img
+      src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400"
+      alt="T-Shirt"
+    >
     <h3>T-Shirt</h3>
     <p>AED 25</p>
     <button onclick="add('T-Shirt',25)">Add to Cart</button>
   </div>
 
-  <div class="product">
-    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
-         alt="Watch">
+  <div class="product" data-category="Accessories">
+    <img
+      src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
+      alt="Watch"
+    >
     <h3>Watch</h3>
     <p>AED 50</p>
     <button onclick="add('Watch',50)">Add to Cart</button>
   </div>
 
   <div class="product" data-category="Electronics">
-    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-         alt="Headphones">
+    <img
+      src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+      alt="Headphones"
+    >
     <h3>Headphones</h3>
     <p>AED 35</p>
     <button onclick="add('Headphones',35)">Add to Cart</button>
@@ -154,13 +203,19 @@ button {
   <button onclick="checkout()">Checkout</button>
 </div>
 
-<button onclick="orderWhatsApp()">Order on WhatsApp</button>
+<button class="whatsapp-button" onclick="orderWhatsApp()">
+  Order on WhatsApp
+</button>
+
+<footer>
+  <p>© Nj Store - Online Shopping</p>
+</footer>
 
 <script>
 let cart = [];
 
 function add(name, price) {
-  cart.push({name, price});
+  cart.push({name: name, price: price});
   render();
 }
 
@@ -170,17 +225,24 @@ function removeItem(index) {
 }
 
 function render() {
-  document.getElementById('items').innerHTML =
-    cart.length === 0
-      ? 'Your cart is empty.'
-      : cart.map((item, i) =>
-          `${item.name} - AED ${item.price}
-          <button class="remove" onclick="removeItem(${i})">Remove</button>`
-        ).join('<br><br>');
+  const itemsElement = document.getElementById('items');
+
+  if (cart.length === 0) {
+    itemsElement.textContent = 'Your cart is empty.';
+  } else {
+    itemsElement.innerHTML = cart.map(function(item, i) {
+      return item.name + ' - AED ' + item.price +
+        ' <button class="remove" onclick="removeItem(' +
+        i + ')">Remove</button>';
+    }).join('<br><br>');
+  }
+
+  const total = cart.reduce(function(sum, item) {
+    return sum + item.price;
+  }, 0);
 
   document.getElementById('total').textContent =
-    'Total: AED ' +
-    cart.reduce((sum, item) => sum + item.price, 0);
+    'Total: AED ' + total;
 }
 
 function checkout() {
@@ -188,7 +250,10 @@ function checkout() {
     alert('Please add products to your cart!');
     return;
   }
-  alert('Your cart is ready! Please use Order on WhatsApp to place your order.');
+
+  alert(
+    'Your cart is ready! Please use Order on WhatsApp to place your order.'
+  );
 }
 
 function orderWhatsApp() {
@@ -198,45 +263,58 @@ function orderWhatsApp() {
   }
 
   const phone = '971543447869';
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
-  const products = cart.map(item =>
-    item.name + ' - AED ' + item.price
-  ).join('\n');
 
-  const message = 'Hello Nj Store! I want to order:\n'
-    + products + '\nTotal: AED ' + total;
+  const total = cart.reduce(function(sum, item) {
+    return sum + item.price;
+  }, 0);
 
-  window.open(
-    'https://wa.me/' + phone + '?text=' + encodeURIComponent(message),
-    '_blank'
-  );
+  const products = cart.map(function(item) {
+    return item.name + ' - AED ' + item.price;
+  }).join('\n');
+
+  const message =
+    'Hello Nj Store! I want to order:\n' +
+    products + '\nTotal: AED ' + total;
+
+  const url = 'https://wa.me/' + phone +
+    '?text=' + encodeURIComponent(message);
+
+  window.open(url, '_blank');
 }
 
 function searchProducts() {
-  
-const categoryMatch =
-  category === 'All' ||
-  product.dataset.category === category;
+  const input = document.getElementById('searchInput')
+    .value.toLowerCase().trim();
 
-const searchMatch = input === '' ||
-  name.includes(input) ||
-  (input.length >= 3 && fuzzyMatch(name, input));
+  const category = document.getElementById('categoryFilter').value;
 
-const found = categoryMatch && searchMatch;
+  const products = document.querySelectorAll(
+    '#productList .product'
+  );
 
-const category = document.getElementById('categoryFilter').value;
-  const products = document.querySelectorAll('#productList .product');
   let visibleCount = 0;
 
   products.forEach(function(product) {
-    const name = product.querySelector('h3').textContent.toLowerCase();
-    const found = input === '' ||
+    const name = product.querySelector('h3')
+      .textContent.toLowerCase();
+
+    const productCategory = product.dataset.category;
+
+    const categoryMatch =
+      category === 'All' || productCategory === category;
+
+    const searchMatch =
+      input === '' ||
       name.includes(input) ||
-      (input.length >= 3 && fuzzyMatch(name, input));
+      fuzzyMatch(name, input);
+
+    const found = categoryMatch && searchMatch;
 
     product.style.display = found ? '' : 'none';
 
-    if (found) visibleCount++;
+    if (found) {
+      visibleCount++;
+    }
   });
 
   document.getElementById('noResults').style.display =
@@ -247,18 +325,28 @@ function fuzzyMatch(name, input) {
   const words = name.split(/[^a-z0-9]+/);
 
   return words.some(function(word) {
-    if (word.length < 3) return false;
+    if (word.length < 3) {
+      return false;
+    }
+
+    if (word.includes(input) || input.includes(word)) {
+      return true;
+    }
 
     const distance = levenshtein(word, input);
 
-    return distance <= (input.length >= 6 ? 2 : 1);
+    const allowedDistance = input.length >= 6 ? 2 : 1;
+
+    return distance <= allowedDistance;
   });
 }
 
 function levenshtein(a, b) {
   const row = Array.from(
     {length: b.length + 1},
-    (_, i) => i
+    function(_, i) {
+      return i;
+    }
   );
 
   for (let i = 1; i <= a.length; i++) {
