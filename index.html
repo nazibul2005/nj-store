@@ -48,6 +48,8 @@ button{background:#16a34a;color:white;border:0;padding:10px;border-radius:7px;cu
 <button onclick="checkout()">Checkout</button>
 </div>
 
+<button onclick="orderWhatsApp()">Order on WhatsApp</button>
+  
 <script>
 let cart=[];
 function add(name,price){
@@ -65,11 +67,31 @@ cart.map((item,i)=>`${item.name} - AED ${item.price} <button class="remove" oncl
 document.getElementById('total').textContent=
 'Total: AED '+cart.reduce((sum,item)=>sum+item.price,0);
 }
-function checkout(){
+
+function orderWhatsApp(){
+  if(cart.length===0){
+    alert('Please add products to your cart!');
+    return;
+  }
+
+  const phone='971543447869';
+  const total=cart.reduce((sum,item)=>sum+item.price,0);
+  const products=cart.map(item=>item.name+' - AED '+item.price).join('\n');
+
+  const message='Hello Nj Store! I want to order:\n'
+    +products
+    +'\nTotal: AED '+total;
+
+  window.open(
+    'https://wa.me/'+phone+'?text='+encodeURIComponent(message),
+    '_blank'
+  );
+}
+  function checkout(){
 if(cart.length===0){alert('Your cart is empty!');return;}
 alert('Demo only! Your total is AED '+cart.reduce((sum,item)=>sum+item.price,0));
 }
 </script>
 </body>
 </html>
-<button onclick="checkout()">Checkout</button>
+
