@@ -146,7 +146,7 @@ function searchProducts() {
     const found = words.some(function(word) {
       return word.includes(input) ||
         (input.length >= 3 && word.length >= 3 &&
-         levenshtein(word, input) <= 1);
+         levenshtein(word, input) <= 2);
     });
     product.style.display = found ? '' : 'none';
   });
@@ -169,8 +169,6 @@ function levenshtein(a, b) {
   }
   return row[b.length];
 }
-
-function searchProducts() {
   const input = document.getElementById('searchInput').value.toLowerCase();
   const products = document.querySelectorAll('.product');
 
