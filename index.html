@@ -109,6 +109,13 @@ button {
   oninput="searchProducts()"
 >
 
+<select id="categoryFilter" class="category-filter" onchange="searchProducts()">
+  <option value="All">All Categories</option>
+  <option value="Fashion">Fashion</option>
+  <option value="Accessories">Accessories</option>
+  <option value="Electronics">Electronics</option>
+</select>
+  
 <h2>Our Products</h2>
 <p id="noResults">No products found. Try another spelling.</p>
 
@@ -130,7 +137,7 @@ button {
     <button onclick="add('Watch',50)">Add to Cart</button>
   </div>
 
-  <div class="product">
+  <div class="product" data-category="Electronics">
     <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
          alt="Headphones">
     <h3>Headphones</h3>
@@ -206,9 +213,18 @@ function orderWhatsApp() {
 }
 
 function searchProducts() {
-  const input = document.getElementById('searchInput')
-    .value.toLowerCase().trim();
+  
+const categoryMatch =
+  category === 'All' ||
+  product.dataset.category === category;
 
+const searchMatch = input === '' ||
+  name.includes(input) ||
+  (input.length >= 3 && fuzzyMatch(name, input));
+
+const found = categoryMatch && searchMatch;
+
+const category = document.getElementById('categoryFilter').value;
   const products = document.querySelectorAll('#productList .product');
   let visibleCount = 0;
 
