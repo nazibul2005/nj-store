@@ -135,22 +135,26 @@ function orderWhatsApp(){
   );
 }
   
+
 function searchProducts() {
-  const input = document.getElementById('searchInput').value
-    .toLowerCase().trim();
+  const input = document.getElementById('searchInput')
+    .value.toLowerCase().trim();
   const products = document.querySelectorAll('.product');
 
   products.forEach(function(product) {
     const text = product.textContent.toLowerCase();
-    const words = text.split(/\s+/);
-    const found = words.some(function(word) {
-      return word.includes(input) ||
-        (input.length >= 3 && word.length >= 3 &&
-         levenshtein(word, input) <= 2);
-    });
+    const words = text.split(/[^a-z0-9]+/);
+
+    const found = input === '' || text.includes(input) ||
+      words.some(function(word) {
+        return word.length >= 3 && input.length >= 3 &&
+          levenshtein(word, input) <= 2;
+      });
+
     product.style.display = found ? '' : 'none';
   });
 }
+
 
 function levenshtein(a, b) {
   const row = Array.from({length: b.length + 1}, (_, i) => i);
