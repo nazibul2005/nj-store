@@ -1,134 +1,115 @@
 
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nj Store Admin</title>
   <style>
     body {
       margin: 0;
-      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #101522;
+      color: #f0c76a;
       font-family: Arial, sans-serif;
-      background: #080b12;
-      color: #f5f2e9;
     }
-    main {
-      max-width: 420px;
-      margin: 40px auto;
-      padding: 22px;
-      background: #111722;
-      border: 1px solid #d9b45b;
-      border-radius: 12px;
+    .panel {
+      width: 85%;
+      max-width: 360px;
+      padding: 25px;
+      border: 1px solid #c9a34d;
+      border-radius: 15px;
+      text-align: center;
     }
-    h1 { color: #d9b45b; }
     input, button {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
       box-sizing: border-box;
+      width: 100%;
+      padding: 13px;
+      margin-top: 14px;
       border-radius: 7px;
+      font-size: 16px;
     }
     input {
-      background: #080b12;
-      color: white;
-      border: 1px solid #293140;
+      border: 1px solid #c9a34d;
+      background: #fff;
+      color: #111;
     }
     button {
-      background: #d9b45b;
-      color: #111;
       border: 0;
+      background: #e6bd60;
+      color: #111;
       font-weight: bold;
     }
-    #message { overflow-wrap: anywhere; }
+    #message {
+      color: white;
+      overflow-wrap: anywhere;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Nj Store Admin</h1>
+  <main class="panel">
+    <h2>Nj Store Admin</h2>
     <p>Admin Login</p>
 
-    <input id="email" type="email"
-      placeholder="Admin email" autocomplete="username">
+    <form id="loginForm">
+      <input id="email" type="email"
+        placeholder="Email address" required>
+      <input id="password" type="password"
+        placeholder="Password" required>
+      <button type="submit">Login</button>
+    </form>
 
-    <input id="password" type="password"
-      placeholder="Password" autocomplete="current-password">
-
-    <button id="loginButton">Login</button>
-    <button id="logoutButton" hidden>Logout</button>
-
-    <p id="message">Supabase সংযোগ প্রস্তুত।</p>
-    <section id="adminArea" hidden>
-      <h2>Admin Dashboard</h2>
-      <p>লগইন হয়েছে। পণ্য পরিচালনা চালু করতে পরবর্তী নিরাপদ সেটআপ দরকার।</p>
-    </section>
+    <p id="message"></p>
   </main>
 
   <script>
     const SUPABASE_URL =
-      'https://tjyuuinymsukxggwipwf.supabase.co';
+      "https://tjyuuinymsukxggwipwf.supabase.co";
 
     const SUPABASE_KEY =
-      'sb_publishable_zZiP_dclZ_jK46swVBicPA_QxhQuHPD';
+      "sb_publishable_zZiP_dclZ_jK46swVBicPA_QxhQuHPD";
 
-    const message = document.getElementById('message');
-    const adminArea = document.getElementById('adminArea');
-    const loginButton = document.getElementById('loginButton');
-    const logoutButton = document.getElementById('logoutButton');
+    document.getElementById("loginForm")
+      .addEventListener("submit", async function(event) {
+        event.preventDefault();
 
-    async function login() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
+        const message = document.getElementById("message");
+        message.textContent = "Logging in...";
 
-      if (!email || !password) {
-        message.textContent = 'Email ও password লিখুন।';
-        return;
-      }
+        try {
+          const response = await fetch(
+            SUPABASE_URL + "/auth/v1/token?grant_type=password",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_KEY
+              },
+              body: JSON.stringify({
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+              })
+            }
+          );
 
-      message.textContent = 'Login হচ্ছে...';
+          const result = await response.json();
 
-      try {
-        const response = await fetch(
-          SUPABASE_URL + '/auth/v1/token?grant_type=password',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              apikey: SUPABASE_KEY
-            },
-            body: JSON.stringify({ email, password })
+          if (!response.ok) {
+            throw new Error(
+              result.msg || result.message ||
+              result.error_description || "Login failed"
+            );
           }
-        );
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.msg || data.message ||
-            'Login ব্যর্থ হয়েছে।');
+          message.textContent =
+            "Login successful! Admin product features still need setup.";
+        } catch (error) {
+          message.textContent = "Error: " + error.message;
         }
-
-        message.textContent =
-          'Login সফল। Admin permission সেট না করা পর্যন্ত পণ্য পরিবর্তন বন্ধ থাকবে।';
-
-        adminArea.hidden = false;
-        loginButton.hidden = true;
-        logoutButton.hidden = false;
-        document.getElementById('password').value = '';
-
-      } catch (error) {
-        message.textContent = error.message;
-      }
-    }
-
-    loginButton.addEventListener('click', login);
-
-    logoutButton.addEventListener('click', () => {
-      adminArea.hidden = true;
-      loginButton.hidden = false;
-      logoutButton.hidden = true;
-      message.textContent =
-        'এই পেজ থেকে বের হয়ে যান। পূর্ণ লগআউটের জন্য Auth session ব্যবস্থাও যোগ করতে হবে।';
-    });
+      });
   </script>
 </body>
 </html>
